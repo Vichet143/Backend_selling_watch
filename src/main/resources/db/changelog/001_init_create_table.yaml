@@ -1,0 +1,236 @@
+databaseChangeLog:
+  # 1. Create independent master tables
+  - changeSet:
+      id: 001_init_create_permission_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002_init_create_role_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003_init_create_user_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_non_expired
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_non_locked
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: credentials_non_expired
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+
+  # 2. Create the Role-Permission relation
+  - changeSet:
+      id: 004_init_create_roles_permission_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: roles_permission
+            columns:
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: permission_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: roles_permission
+            columnNames: role_id, permission_id
+            constraintName: pk_roles_permission
+        - addForeignKeyConstraint:
+            baseTableName: roles_permission
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_roles_permission_role
+        - addForeignKeyConstraint:
+            baseTableName: roles_permission
+            baseColumnNames: permission_id
+            referencedTableName: permission
+            referencedColumnNames: id
+            constraintName: fk_roles_permission_permission
+
+  # 3. Create the User-Role relation
+  - changeSet:
+      id: 005_init_create_user_roles_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: user_id, role_id
+            constraintName: pk_user_roles
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_roles_user
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_user_roles_role
+
+  # 4 create table category
+  - changeSet:
+      id: 006_init_create_category_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATE
+                  constraints:
+                    nullable: false
+  # 5 create table verificationCode
+  - changeSet:
+      id: create-verification-code
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: verification_code
+
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: code
+                  type: VARCHAR(6)
+              - column:
+                  name: expiration_time
+                  type: TIMESTAMP
+              - column:
+                  name: verified
+                  type: BOOLEAN
