@@ -26,12 +26,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TokenVerifyFilter extends OncePerRequestFilter {
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
-        if (Objects.isNull(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request,response);
+        if (Objects.isNull(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -53,12 +54,34 @@ public class TokenVerifyFilter extends OncePerRequestFilter {
                     authorities.stream()
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toSet());
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username,null,grantedAuthorities);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        }catch (ExpiredJwtException e){
-            logger.info(e.getMessage());
-            throw new ApiException(HttpStatus.BAD_REQUEST,"false", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            response.getWriter().write("""
+                    {
+                        "status": 401,
+                        "message": "Token has expired"
+                    }
+                    """);
+
+            return;
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            response.getWriter().write("""
+                    {
+                        "status": 401,
+                        "message": "Invalid token"
+                    }
+                    """);
+
+            return;
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }

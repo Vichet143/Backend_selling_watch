@@ -8,7 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum PermissionEnum {
     CATEGORY_WRITE("category:write"),
-    CATEGORY_READ("category:read");
+    CATEGORY_READ("category:read"),
+    CATEGORY_DELETE("category:delete");
 
     private String description;
 }
