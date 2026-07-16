@@ -4,9 +4,16 @@ import com.example.practice.entity.Category;
 import com.example.practice.exception.ApiException;
 import com.example.practice.repository.CategoryRepository;
 import com.example.practice.service.CategoryService;
+import com.example.practice.service.util.PageUtil;
+import com.example.practice.spec.CategoryFilter;
+import com.example.practice.spec.PageSpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +55,38 @@ public class CategoryImpl implements CategoryService {
     public void deleteById(Long id) {
         Category byId = findById(id);
         categoryRepository.deleteById(byId.getId());
+    }
+
+    @Override
+    public Page<Category> getAllCategory(Map<String, String> param) {
+        CategoryFilter categoryFilter = new CategoryFilter();
+        PageSpec<Category> pageSpec = new PageSpec<>();
+
+        pageSpec.likeIgnoreCase(
+                "categoryName",
+                categoryFilter.getCategoryName()
+        );
+
+        pageSpec.equal(
+                "id",
+                categoryFilter.getId()
+        );
+
+        int pageLimit = PageUtil.DEFAULT_PAGE_LIMIT;
+        if (param.containsKey( PageUtil.PAGE_LIMIT)){
+            pageLimit = Integer.parseInt(param.get(PageUtil.PAGE_LIMIT));
+
+        }
+
+        int pageNumber = PageUtil.DEFAULT_PAGE_NUMBER;
+        if (param.containsKey( PageUtil.PAGE_SIZE)){
+            pageNumber = Integer.parseInt(param.get(PageUtil.PAGE_SIZE));
+
+        }
+
+        Pageable pageable = PageUtil.getPageable(pageNumber, pageLimit);
+
+        return categoryRepository.findAll(pageSpec, pageable);
     }
 
 }

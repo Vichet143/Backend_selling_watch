@@ -30,8 +30,6 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final FilterChainExceptionHandler filterChainExceptionHandler;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 
@@ -43,7 +41,7 @@ public class SecurityConfig {
                 .addFilterBefore(new TokenVerifyFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/", "/index.html", "/css/**", "/js/**", "/error","/login").permitAll()
+                        .requestMatchers( "/", "/index.html", "/css/**", "/js/**", "/error","/login", "/role").permitAll()
                         .requestMatchers("/auth/**", "/auth/verify-otp").permitAll()
                         .anyRequest().authenticated()
                 )

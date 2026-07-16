@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -31,11 +32,7 @@ public class JwtServiceImpl implements JwtService {
                 .subject(user.getUsername())
                 .issuedAt(new Date())
                 .claim("authorities", authorities)
-                .expiration(Date.from(
-                        LocalDateTime.now()
-                                .plusHours(1)
-                                .atZone(ZoneId.systemDefault())
-                                .toInstant()))
+                .expiration(java.sql.Date.valueOf(LocalDate.now().plusDays(7)))
                 .issuer("sellshop.com")
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
