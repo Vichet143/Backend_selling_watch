@@ -6,6 +6,7 @@ import com.example.practice.dto.ResponseMessageDTO;
 import com.example.practice.entity.Category;
 import com.example.practice.mapper.CategoryMapperImpl;
 import com.example.practice.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Controller
+@RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/category")
 @RequiredArgsConstructor
 public class CategoryController {
