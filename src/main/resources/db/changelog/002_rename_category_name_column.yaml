@@ -1,0 +1,15 @@
+databaseChangeLog:
+- changeSet:
+    id: rename-category-name-column
+    author: choubvichet1001@gmail.com
+    changes:
+      - renameColumn:
+          tableName: categories
+          oldColumnName: category_name
+          newColumnName: name
+          columnDataType: VARCHAR(50)
+      - renameColumn:
+            tableName: brand
+            oldColumnName: brand_name
+            newColumnName: name
+            columnDataType: VARCHAR(50)

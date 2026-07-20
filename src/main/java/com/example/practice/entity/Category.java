@@ -18,8 +18,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_name", nullable = false)
-    private String categoryName;
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private String description;

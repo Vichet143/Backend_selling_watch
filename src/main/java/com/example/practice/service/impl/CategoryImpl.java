@@ -5,7 +5,7 @@ import com.example.practice.exception.ApiException;
 import com.example.practice.repository.CategoryRepository;
 import com.example.practice.service.CategoryService;
 import com.example.practice.service.util.PageUtil;
-import com.example.practice.spec.CategoryFilter;
+import com.example.practice.spec.PageFilter;
 import com.example.practice.spec.PageSpec;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,8 +41,13 @@ public class CategoryImpl implements CategoryService {
     public Category updateById(Long id, Category category) {
         try {
             Category update = findById(id);
-            update.setCategoryName(category.getCategoryName());
-            update.setDescription(category.getDescription());
+            if (category.getName() != null){
+                update.setName(category.getName());
+            }
+             if (category.getDescription() != null){
+                 update.setDescription(category.getDescription());
+             }
+
 
             return categoryRepository.save(update);
         } catch (Exception e) {
@@ -59,17 +64,26 @@ public class CategoryImpl implements CategoryService {
 
     @Override
     public Page<Category> getAllCategory(Map<String, String> param) {
-        CategoryFilter categoryFilter = new CategoryFilter();
+        PageFilter pageFilter = new PageFilter();
+
+        if (param.containsKey("name")){
+            pageFilter.setName(param.get("name"));
+        }
+
+        if (param.containsKey("id")) {
+            pageFilter.setId(Long.parseLong(param.get("id")));
+        }
+
         PageSpec<Category> pageSpec = new PageSpec<>();
 
         pageSpec.likeIgnoreCase(
-                "categoryName",
-                categoryFilter.getCategoryName()
+                "name",
+                pageFilter.getName()
         );
 
         pageSpec.equal(
                 "id",
-                categoryFilter.getId()
+                pageFilter.getId()
         );
 
         int pageLimit = PageUtil.DEFAULT_PAGE_LIMIT;
