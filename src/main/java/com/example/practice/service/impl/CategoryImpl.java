@@ -38,6 +38,12 @@ public class CategoryImpl implements CategoryService {
     }
 
     @Override
+    public Category findByName(String name) {
+        return categoryRepository.findCategoriesByName(name)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false" , "Category not found with name " + name));
+    }
+
+    @Override
     public Category updateById(Long id, Category category) {
         try {
             Category update = findById(id);
@@ -68,10 +74,12 @@ public class CategoryImpl implements CategoryService {
 
         if (param.containsKey("name")){
             pageFilter.setName(param.get("name"));
+            findByName(pageFilter.getName());
         }
 
         if (param.containsKey("id")) {
             pageFilter.setId(Long.parseLong(param.get("id")));
+            findById(pageFilter.getId());
         }
 
         PageSpec<Category> pageSpec = new PageSpec<>();

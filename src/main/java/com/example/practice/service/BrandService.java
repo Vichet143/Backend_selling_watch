@@ -8,6 +8,7 @@ import java.util.Map;
 public interface BrandService {
     Brand createBrand(Brand brand);
     Brand findById(Long id);
+    Brand finByName(String name);
     Brand updateBrandById(Long id, Brand brand);
     void deleteBrandById(long id);
     Page<Brand> getAllBrand(Map<String, String> param);
