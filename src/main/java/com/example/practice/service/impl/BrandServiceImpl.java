@@ -34,7 +34,13 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Brand findById(Long id) {
         return brandRepository.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false", "Brand not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false", "Brand not found " + id));
+    }
+
+    @Override
+    public Brand finByName(String name) {
+        return brandRepository.findBrandsByName(name)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false", "Brand not found with name " + name));
     }
 
     @Override
@@ -67,9 +73,11 @@ public class BrandServiceImpl implements BrandService {
 
         if (param.containsKey("name")){
             pageFilter.setName(param.get("name"));
+            finByName(pageFilter.getName());
         }
         if (param.containsKey("id")) {
             pageFilter.setId(Long.parseLong(param.get("id")));
+            findById(pageFilter.getId());
         }
         PageSpec<Brand> pageSpec = new PageSpec<>();
 

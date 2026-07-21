@@ -11,7 +11,7 @@ public class GlobalExceptionHandle{
 
     @ExceptionHandler(value = ApiException.class)
     public ResponseEntity<?> handleServiceException(ApiException se){
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, se.getSuccess(), se.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(se.getStatus(), se.getSuccess(), se.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
