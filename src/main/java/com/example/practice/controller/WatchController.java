@@ -6,10 +6,12 @@ import com.example.practice.entity.Watch;
 import com.example.practice.exception.ApiException;
 import com.example.practice.mapper.WatchMapper;
 import com.example.practice.service.WatchService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -22,6 +24,7 @@ public class WatchController {
     private final WatchService watchService;
     private final WatchMapper watchMapper;
 
+    @PreAuthorize("hasAuthority('watch:write')")
     @PostMapping
     public ResponseEntity<?> createWatch(@RequestBody RequestWatchDTO requestWatchDTO){
         try{
@@ -40,6 +43,7 @@ public class WatchController {
 
     }
 
+    @PreAuthorize("hasAuthority('watch:write')")
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateWatch(@PathVariable Long id, @RequestBody RequestWatchDTO requestWatchDTO){
         try{
@@ -58,6 +62,7 @@ public class WatchController {
 
     }
 
+    @PreAuthorize("hasAuthority('watch:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWatch(@PathVariable Long id){
         watchService.deleteWatchById(id);
@@ -71,6 +76,7 @@ public class WatchController {
         return ResponseEntity.ok().body(responseMessageDTO);
     }
 
+    @PreAuthorize("hasAuthority('watch:read')")
     @GetMapping
     public ResponseEntity<?> getAllWatch(@RequestParam Map<String , String> param){
 
@@ -78,7 +84,7 @@ public class WatchController {
 
         ResponseMessageDTO<?> responseMessageDTO = new ResponseMessageDTO<>(
                 true,
-                "Retriveve Data watch",
+                "Retrieve Data watch",
                 allWatch
         );
 
