@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 @RestController
-@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/brand")
 @RequiredArgsConstructor
 public class BrandController {

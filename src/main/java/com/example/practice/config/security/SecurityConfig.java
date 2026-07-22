@@ -42,7 +42,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/", "/index.html", "/css/**", "/js/**", "/error","/login", "/role").permitAll()
-                        .requestMatchers("/auth/**", "/auth/verify-otp","/swagger-ui/**","/v3/api-docs*/**").permitAll()
+                        .requestMatchers("/auth/**", "/auth/verify-otp","/swagger-ui/**","/v3/api-docs*/**","/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
