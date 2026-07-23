@@ -420,3 +420,45 @@ databaseChangeLog:
             referencedTableName: watch
             referencedColumnNames: id
             constraintName: fk_watch_id
+
+  # create inventory table
+  - changeSet:
+      id: create_inventory_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - createTable:
+            tableName: inventory
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: watch_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: inventory
+            baseColumnNames: watch_id
+            referencedTableName: watch
+            referencedColumnNames: id
+            constraintName: fk_watch_id

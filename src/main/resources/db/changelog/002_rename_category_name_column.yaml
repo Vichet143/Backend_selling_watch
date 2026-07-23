@@ -13,3 +13,11 @@ databaseChangeLog:
             oldColumnName: brand_name
             newColumnName: name
             columnDataType: VARCHAR(50)
+- changeSet:
+    id: add_unique_inventory_watch_id
+    author: choubvichet1001@gmail.com
+    changes:
+      - addUniqueConstraint:
+          tableName: inventory
+          columnNames: watch_id
+          constraintName: uk_inventory_watch_id
