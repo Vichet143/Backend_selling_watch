@@ -9,4 +9,5 @@ public interface UserService {
     Optional<AuthUser> findUserByUsername(String username);
     User createuser(User user);
     Optional<AuthUser> findUserByEmail(String email);
+    User findById(Long id);
 }

@@ -113,4 +113,9 @@ public class UserController {
     public String test() {
         return "Auth controller working";
     }
+
+    @GetMapping("/findbyid/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
+    }
 }

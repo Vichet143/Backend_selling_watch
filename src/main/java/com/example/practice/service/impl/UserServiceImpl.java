@@ -111,4 +111,10 @@ public class UserServiceImpl implements UserService {
                 .build();
         return Optional.ofNullable(authUser);
     }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false", "user not found"));
+    }
 }
