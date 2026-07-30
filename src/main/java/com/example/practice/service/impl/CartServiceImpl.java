@@ -35,4 +35,16 @@ public class CartServiceImpl implements CartService {
         }
 
     }
+
+    @Override
+    public Cart findByUserId(Long id) {
+        return cartRepository.findByUserId(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false", "User id not found in cart table"));
+    }
+
+    @Override
+    public Cart findById(Long id) {
+        return cartRepository.findById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "false", "Not found with id " + id));
+    }
 }

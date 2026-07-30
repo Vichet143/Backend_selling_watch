@@ -7,10 +7,7 @@ import com.example.practice.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cart")
@@ -27,6 +24,18 @@ public class CartController {
                 cart
         );
 
+        return ResponseEntity.ok().body(responseMessageDTO);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findByUserId(@PathVariable Long id){
+        Cart cart = cartService.findByUserId(id);
+
+        ResponseMessageDTO<?> responseMessageDTO = new ResponseMessageDTO<>(
+                true,
+                "Retrieve data with user id",
+                cart
+        );
         return ResponseEntity.ok().body(responseMessageDTO);
     }
 }

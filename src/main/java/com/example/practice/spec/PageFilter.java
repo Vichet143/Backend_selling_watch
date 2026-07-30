@@ -6,6 +6,7 @@ import lombok.Data;
 public class PageFilter {
     private Long id;
     private String name;
+    private Long cartId;
 //    private String description;
 //    private LocalDate createdAt;
 //    private LocalDate updatedAt;

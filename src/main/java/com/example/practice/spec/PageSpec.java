@@ -50,6 +50,17 @@ public class PageSpec<T> implements Specification<T> {
         return this;
     }
 
+    public PageSpec<T> equalJoin(String relation, String field, Object value) {
+
+        if (value != null) {
+            specifications.add((root, query, cb) ->
+                    cb.equal(root.get(relation).get(field), value)
+            );
+        }
+
+        return this;
+    }
+
     @Override
     public Predicate toPredicate(@NonNull Root<T> root,@NonNull CriteriaQuery<?> query,CriteriaBuilder cb
     ) {
