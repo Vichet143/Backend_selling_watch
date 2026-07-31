@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface CartItemRepository extends JpaRepository<CartItem, Long>, JpaSpecificationExecutor<CartItem> {
     Optional<CartItem> findCartItemByWatchId(Long watchId);
     Optional<CartItem> findCartItemByCartId(Long cartId);
+
+    Optional<CartItem> findByCartIdAndWatchId(Long cartId, Long watchId);
 }
