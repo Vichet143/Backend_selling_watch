@@ -21,8 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,21 +42,41 @@ public class CartItemServiceImpl implements CartItemService {
 
         CartItem cartItem = cartItemMapper.toCartItem(cartItemRequestDTO);
 
-        if (cartItemRepository.findCartItemByWatchId(watch.getId()).isPresent()) {
+        Optional<CartItem> existing =
+                cartItemRepository.findByCartIdAndWatchId(
+                        cart.getId(),
+                        watch.getId()
+                );
 
-            //make update quantity when I have already in cart item
-            List<CartItem> all = cartItemRepository.findAll();
-            CartItem cartItem3 = all.stream()
-                    .filter(e -> e.getWatch().getId().equals(watch.getId()))
-                    .findFirst()
-                    .orElse(null);
-            assert cartItem3 != null;
+        if (existing.isPresent()) {
 
-            CartItem cartItem1 = findById(cartItem3.getId());
+            CartItem item = existing.get();
 
-            cartItem1.setQuantity(cartItem1.getQuantity() + cartItemRequestDTO.getQuantity());
-            return cartItemRepository.save(cartItem1);
+            item.setQuantity(
+                    item.getQuantity() + cartItemRequestDTO.getQuantity()
+            );
+
+            return cartItemRepository.save(item);
         }
+
+//        if (cartItemRepository.findCartItemByCartId(cart.getId()).isPresent()){
+//            if (cartItemRepository.findCartItemByWatchId(watch.getId()).isPresent()) {
+//
+//                //make update quantity when I have already in cart item
+//                List<CartItem> all = cartItemRepository.findAll();
+//                CartItem cartItem3 = all.stream()
+//                        .filter(e -> e.getWatch().getId().equals(watch.getId()))
+//                        .findFirst()
+//                        .orElse(null);
+//                assert cartItem3 != null;
+//
+//                CartItem cartItem1 = findById(cartItem3.getId());
+//
+//                cartItem1.setQuantity(cartItem1.getQuantity() + cartItemRequestDTO.getQuantity());
+//                return cartItemRepository.save(cartItem1);
+//            }
+//        }
+
         cartItem.setCart(cart);
         cartItem.setWatch(watch);
         cartItem.setPrice(watch.getPrice());
@@ -115,7 +137,15 @@ public class CartItemServiceImpl implements CartItemService {
         }
 
         if (param.containsKey("cartId")){
-            pageFilter.setCartId(Long.parseLong(param.get("cartId")));
+            pageFilter.setReuseId(Long.parseLong(param.get("cartId")));
+        }
+
+        if (param.containsKey("startDate")) {
+            pageFilter.setStartDate(LocalDate.parse(param.get("startDate")));
+        }
+
+        if (param.containsKey("endDate")) {
+            pageFilter.setEndDate(LocalDate.parse(param.get("endDate")));
         }
 
         PageSpec<CartItem> pageSpec = new PageSpec<>();
@@ -124,13 +154,24 @@ public class CartItemServiceImpl implements CartItemService {
                 "id",
                 pageFilter.getId()
         );
-//
-//        pageSpec.equal(
-//                "cartId",
-//                pageFilter.getCartId()
-//        );
 
-        pageSpec.equalJoin("cart", "id", pageFilter.getCartId());
+        pageSpec.equalJoin("cart", "id", pageFilter.getReuseId());
+
+        if (pageFilter.getStartDate() != null && pageFilter.getEndDate() != null) {
+
+            pageSpec.betweenLocalDate(
+                    "created_at",
+                    pageFilter.getStartDate(),
+                    pageFilter.getEndDate()
+            );
+
+        } else if (pageFilter.getStartDate() != null) {
+
+            pageSpec.startDate(
+                    "created_at",
+                    pageFilter.getStartDate()
+            );
+        }
 
         int pageLimit = PageUtil.DEFAULT_PAGE_LIMIT;
         if (param.containsKey( PageUtil.PAGE_LIMIT)){

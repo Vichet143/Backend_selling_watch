@@ -1,5 +1,6 @@
 package com.example.practice.controller;
 
+import com.example.practice.dto.PageDTO;
 import com.example.practice.dto.ResponseMessageDTO;
 import com.example.practice.dto.WatchImageRequest;
 import com.example.practice.entity.WatchImage;
@@ -75,11 +76,12 @@ public class WatchImageController {
     @GetMapping
     public ResponseEntity<?> getAllWatchImage(@RequestParam Map<String, String> param){
         Page<WatchImage> allWatchImage = watchImageService.getAllWatchImage(param);
+        PageDTO pageDTO = new PageDTO(allWatchImage);
 
         ResponseMessageDTO<?> responseMessageDTO = new ResponseMessageDTO<>(
                 true,
                 "Retrieve data watch image",
-                allWatchImage
+                pageDTO
         );
 
         return ResponseEntity.ok().body(responseMessageDTO);

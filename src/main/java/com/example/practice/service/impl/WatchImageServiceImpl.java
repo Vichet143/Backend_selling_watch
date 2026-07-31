@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Service
@@ -77,12 +78,41 @@ public class WatchImageServiceImpl implements WatchImageService {
             pageFilter.setId(Long.parseLong(param.get("id")));
             findById(pageFilter.getId());
         }
+        if (param.containsKey("watchId")){
+            pageFilter.setReuseId(Long.parseLong(param.get("watchId")));
+        }
+
+        if (param.containsKey("startDate")) {
+            pageFilter.setStartDate(LocalDate.parse(param.get("startDate")));
+        }
+
+        if (param.containsKey("endDate")) {
+            pageFilter.setEndDate(LocalDate.parse(param.get("endDate")));
+        }
         PageSpec<WatchImage> pageSpec = new PageSpec<>();
 
         pageSpec.equal(
                 "id",
                 pageFilter.getId()
         );
+
+        pageSpec.equalJoin("watch", "id", pageFilter.getReuseId());
+
+        if (pageFilter.getStartDate() != null && pageFilter.getEndDate() != null) {
+
+            pageSpec.betweenLocalDate(
+                    "created_at",
+                    pageFilter.getStartDate(),
+                    pageFilter.getEndDate()
+            );
+
+        } else if (pageFilter.getStartDate() != null) {
+
+            pageSpec.startDate(
+                    "created_at",
+                    pageFilter.getStartDate()
+            );
+        }
 
         int pageLimit = PageUtil.DEFAULT_PAGE_LIMIT;
         if (param.containsKey( PageUtil.PAGE_LIMIT)){
