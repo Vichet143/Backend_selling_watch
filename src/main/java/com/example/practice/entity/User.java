@@ -1,5 +1,6 @@
 package com.example.practice.entity;
 
+import com.example.practice.config.security.AuthUser;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Set;
@@ -46,4 +47,5 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
 }

@@ -6,8 +6,14 @@ import com.example.practice.entity.User;
 import java.util.Optional;
 
 public interface UserService {
+
     Optional<AuthUser> findUserByUsername(String username);
-    User createuser(User user);
+
     Optional<AuthUser> findUserByEmail(String email);
+
+    User createuser(User user);
+
+    User findUserEntityByEmail(String email);
+
     User findById(Long id);
 }

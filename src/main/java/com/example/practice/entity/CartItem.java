@@ -1,5 +1,6 @@
 package com.example.practice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,7 +11,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@Entity(name = "cart_item")
+@Entity
+@Table(name = "cart_item")
 @EntityListeners(AuditingEntityListener.class)
 public class CartItem {
     @Id
@@ -19,6 +21,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonIgnore
     private Cart cart;
 
     @OneToOne

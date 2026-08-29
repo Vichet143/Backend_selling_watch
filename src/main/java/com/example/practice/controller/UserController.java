@@ -1,12 +1,15 @@
 package com.example.practice.controller;
 
 import com.example.practice.config.security.AuthUser;
-import com.example.practice.dto.*;
+import com.example.practice.dto.LoginRequest;
+import com.example.practice.dto.LoginResponseShowToken;
+import com.example.practice.dto.ResponseMessageDTO;
+import com.example.practice.dto.UserDTO;
+import com.example.practice.dto.VerifyOtpRequest;
 import com.example.practice.entity.User;
-import com.example.practice.entity.VerificationCode;
 import com.example.practice.exception.ApiException;
 import com.example.practice.mapper.UserMapper;
-import com.example.practice.repository.VerificationCodeRepository;
+import com.example.practice.repository.UserRepository;
 import com.example.practice.service.EmailVerificationService;
 import com.example.practice.service.JwtService;
 import com.example.practice.service.UserService;
@@ -16,13 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,88 +30,179 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final EmailVerificationService emailVerificationService;
     private final JwtService jwtService;
-    private final VerificationCodeRepository verificationCodeRepository;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        User createuser = userService.createuser(user);
-        UserDTO userDto = userMapper.toUserDto(createuser);
+    public ResponseEntity<?> createUser(
+            @RequestBody User user
+    ) {
+
+        if (userRepository.existsByEmail(user.getEmail())) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Email already exists");
+        }
+
+        User createdUser =
+                userService.createuser(user);
+
+        UserDTO userDto =
+                userMapper.toUserDto(createdUser);
+
         return ResponseEntity.ok(userDto);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(
+            @RequestBody LoginRequest request
+    ) {
 
-        System.out.println("Step 1: Login called");
+        System.out.println("==============================");
+        System.out.println("LOGIN REQUEST");
+        System.out.println("==============================");
+
+        System.out.println(
+                "Email: " + request.getEmail()
+        );
+
+        if (request.getEmail() == null ||
+                request.getEmail().isBlank()) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Email is required");
+        }
+
+        if (request.getPassword() == null ||
+                request.getPassword().isBlank()) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Password is required");
+        }
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
 
-        AuthUser user = userService.findUserByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        emailVerificationService.sendVerificationCode(user.getEmail());
-
-        ResponseMessageDTO<?> responseMessageDTO = new ResponseMessageDTO<>(
-                true,
-                "OTP has been sent to your email.",
-                user
+        System.out.println(
+                "Authentication successful"
         );
 
-        if (responseMessageDTO.getMessage().equals("OTP has been sent to your email.")) {
-            emailVerificationService.update(user.getEmail(),false);
-        }
+        User user =
+                userService.findUserEntityByEmail(
+                        request.getEmail()
+                );
 
-        return ResponseEntity.ok(responseMessageDTO);
+        System.out.println(
+                "User found: " + user.getEmail()
+        );
+
+        emailVerificationService.sendVerificationCode(
+                user.getEmail()
+        );
+
+        emailVerificationService.update(
+                user.getEmail(),
+                false
+        );
+
+        ResponseMessageDTO<?> responseMessageDTO =
+                new ResponseMessageDTO<>(
+                        true,
+                        "OTP has been sent to your email.",
+                        user
+                );
+
+        return ResponseEntity.ok(
+                responseMessageDTO
+        );
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyOtp( @RequestBody VerifyOtpRequest request ) {
+    public ResponseEntity<?> verifyOtp(
+            @RequestBody VerifyOtpRequest request
+    ) {
 
-        //findUserByEmail
-        AuthUser user = userService.findUserByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        System.out.println("==============================");
+        System.out.println("VERIFY OTP");
+        System.out.println("==============================");
 
-        boolean valid = emailVerificationService.verifyCode(
-                user.getEmail(),
-                request.getOtp()
-        );
+        AuthUser user =
+                userService.findUserByEmail(
+                        request.getEmail()
+                ).orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found"
+                        )
+                );
+
+        boolean valid =
+                emailVerificationService.verifyCode(
+                        user.getEmail(),
+                        request.getOtp()
+                );
 
         if (!valid) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiException(HttpStatus.BAD_REQUEST, "false", "Invalid OTP"));
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            new ApiException(
+                                    HttpStatus.BAD_REQUEST,
+                                    "false",
+                                    "Invalid OTP"
+                            )
+                    );
         }
 
-        // Generate JWT here
-        String token = jwtService.generateToken(user);
+        String token =
+                jwtService.generateToken(user);
 
-        UserDTO userDtoResponse = userMapper.toUserDtoResponse(user);
+        UserDTO userDtoResponse =
+                userMapper.toUserDtoResponse(user);
 
-        LoginResponseShowToken loginResponseShowToken = new LoginResponseShowToken(userDtoResponse, token);
-        ResponseMessageDTO<?> responseMessageDTO = new ResponseMessageDTO<>(
-                true,
-                "login success.",
-                loginResponseShowToken
+        LoginResponseShowToken loginResponseShowToken =
+                new LoginResponseShowToken(
+                        userDtoResponse,
+                        token
+                );
+
+        ResponseMessageDTO<?> responseMessageDTO =
+                new ResponseMessageDTO<>(
+                        true,
+                        "login success.",
+                        loginResponseShowToken
+                );
+
+
+        emailVerificationService.update(
+                request.getEmail(),
+                true
         );
-        System.out.println(responseMessageDTO.getMessage().equals("login success."));
-        //check verify
-        if (responseMessageDTO.getMessage().equals("login success.")) {
-            emailVerificationService.update(request.getEmail(),true);
-        }
-        return ResponseEntity.ok(responseMessageDTO);
+
+        return ResponseEntity.ok(
+                responseMessageDTO
+        );
     }
 
     @GetMapping("/test")
     public String test() {
+
         return "Auth controller working";
     }
 
     @GetMapping("/findbyid/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
+    public ResponseEntity<?> findById(
+            @PathVariable Long id
+    ) {
+
+        return ResponseEntity.ok(
+                userService.findById(id)
+        );
     }
 }
