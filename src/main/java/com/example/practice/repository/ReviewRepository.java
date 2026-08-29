@@ -1,6 +1,6 @@
 package com.example.practice.repository;
 
-import com.example.practice.entity.Inventory;
+import com.example.practice.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
-
-    Optional<Inventory> findInventoriesByWatchId(Long watchId);
+public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
+    Optional<Review> findReviewByWatchId(Long watchId);
 }

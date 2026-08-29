@@ -6,6 +6,7 @@ import com.example.practice.dto.ResponseMessageDTO;
 import com.example.practice.entity.CartItem;
 import com.example.practice.exception.ApiException;
 import com.example.practice.service.CartItemService;
+import com.example.practice.service.TelegramService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class CartItemController {
 
     private final CartItemService cartItemService;
+    private final TelegramService telegramService;
 
     @PreAuthorize("hasAuthority('cartItem:write')")
     @PostMapping
@@ -95,6 +97,7 @@ public class CartItemController {
                     "Get data cart item",
                     pageDTO
             );
+
 
             return ResponseEntity.ok().body(responseMessageDTO);
         }catch (Exception e) {

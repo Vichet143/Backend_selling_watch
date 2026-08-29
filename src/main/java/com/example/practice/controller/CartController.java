@@ -4,6 +4,7 @@ import com.example.practice.dto.CartRequestDTO;
 import com.example.practice.dto.ResponseMessageDTO;
 import com.example.practice.entity.Cart;
 import com.example.practice.service.CartService;
+import com.example.practice.service.TelegramService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
+    private final TelegramService telegramService;
 
     @PostMapping
     public ResponseEntity<?> create (@Valid  @RequestBody CartRequestDTO cartRequestDTO){

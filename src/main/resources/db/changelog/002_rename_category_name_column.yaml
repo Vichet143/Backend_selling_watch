@@ -1,23 +1,147 @@
 databaseChangeLog:
-- changeSet:
-    id: rename-category-name-column
-    author: choubvichet1001@gmail.com
-    changes:
-      - renameColumn:
-          tableName: categories
-          oldColumnName: category_name
-          newColumnName: name
-          columnDataType: VARCHAR(50)
-      - renameColumn:
+  - changeSet:
+      id: rename-category-name-column
+      author: choubvichet1001@gmail.com
+      changes:
+        - renameColumn:
+            tableName: categories
+            oldColumnName: category_name
+            newColumnName: name
+            columnDataType: VARCHAR(50)
+        - renameColumn:
             tableName: brand
             oldColumnName: brand_name
             newColumnName: name
             columnDataType: VARCHAR(50)
-- changeSet:
-    id: add_unique_inventory_watch_id
-    author: choubvichet1001@gmail.com
-    changes:
-      - addUniqueConstraint:
-          tableName: inventory
-          columnNames: watch_id
-          constraintName: uk_inventory_watch_id
+  - changeSet:
+      id: add_unique_inventory_watch_id
+      author: choubvichet1001@gmail.com
+      changes:
+        - addUniqueConstraint:
+            tableName: inventory
+            columnNames: watch_id
+            constraintName: uk_inventory_watch_id
+
+  - changeSet:
+      id: add_phone_number_to_order_table
+      author: choubvichet1001@gmail.com
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: phone_number
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+#  - changeSet:
+#      id: restore_cart_table
+#      author: choubvichet1001@gmail.com
+#      changes:
+#        - createTable:
+#            tableName: cart
+#            columns:
+#              - column:
+#                  name: id
+#                  type: BIGINT
+#                  autoIncrement: true
+#                  constraints:
+#                    primaryKey: true
+#                    nullable: false
+#
+#              - column:
+#                  name: user_id
+#                  type: BIGINT
+#                  constraints:
+#                    nullable: false
+#
+#              - column:
+#                  name: created_at
+#                  type: TIMESTAMP
+#                  constraints:
+#                    nullable: false
+#
+#              - column:
+#                  name: updated_at
+#                  type: TIMESTAMP
+#                  constraints:
+#                    nullable: false
+#
+#        - addForeignKeyConstraint:
+#            baseTableName: cart
+#            baseColumnNames: user_id
+#            referencedTableName: users
+#            referencedColumnNames: id
+#            constraintName: fk_cart_user_id
+
+#  - changeSet:
+#      id: restore_cart_item_2_table
+#      author: choubvichet1001@gmail.com
+#      changes:
+#        - createTable:
+#            tableName: cart_item
+#            columns:
+#              - column:
+#                  name: id
+#                  type: BIGINT
+#                  autoIncrement: true
+#                  constraints:
+#                    primaryKey: true
+#                    nullable: false
+#              - column:
+#                  name: cart_id
+#                  type: BIGINT
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: watch_id
+#                  type: BIGINT
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: quantity
+#                  type: INTEGER
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: price
+#                  type: DECIMAL
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: status
+#                  type: BOOLEAN
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: created_at
+#                  type: TIMESTAMP
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: updated_at
+#                  type: TIMESTAMP
+#                  constraints:
+#                    nullable: false
+#        - addForeignKeyConstraint:
+#            baseTableName: cart_item
+#            baseColumnNames: cart_id
+#            referencedTableName: cart
+#            referencedColumnNames: id
+#            constraintName: fk_cart_id
+#        - addForeignKeyConstraint:
+#            baseTableName: cart_item
+#            baseColumnNames: watch_id
+#            referencedTableName: watch
+#            referencedColumnNames: id
+#            constraintName: fk_watch_id
+
+  - changeSet:
+      id: 012_make_order_total_price_nullable
+      author: choubvichet1001@gmail.com
+      changes:
+        - dropNotNullConstraint:
+            tableName: orders
+            columnName: total_price
+            columnDataType: DECIMAL

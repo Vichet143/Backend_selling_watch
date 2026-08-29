@@ -46,6 +46,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
+    public Inventory findByWatchId(Long id) {
+        return inventoryRepository.findInventoriesByWatchId(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "false", "Watch id not found with id " + id));
+    }
+
+    @Override
     public Inventory updateById(Long id, InventoryRequestDTO inventoryRequestDTO) {
         Inventory inventory = findById(id);
 
